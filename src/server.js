@@ -25,8 +25,23 @@ app.use(
 );
 
 // Перший маршрут
-app.get('/', (req, res) => {
-  res.status(200).json({ message: 'Hello world!' });
+app.get('/notes', (req, res) => {
+  res.status(200).json({ message: 'Retrieved all notes' });
+});
+
+app.get('/notes/:noteId', (req, res) => {
+  const { noteId } = req.params;
+  res.status(200).json({ message: `Retrieved note with ID: ${noteId}` });
+});
+
+// Роут: GET /test-error -> симулюємо помилку
+app.get('/test-error', () => {
+  throw new Error('Simulated server error');
+});
+
+// 404 middleware — всі нерозпізнані маршрути
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
 });
 
 // Middleware для обробки помилок
