@@ -1,3 +1,5 @@
+import { Note } from "../models/note.js";
+
 export const getAllNotes = async (req, res) => {
   const {
     page = 1,

@@ -1,7 +1,6 @@
-import { celebrate, Joi, Segments } from "celebrate";
 import { Joi, Segments } from "celebrate";
-import { TAGS } from "../constants/tags.js";
 import mongoose from "mongoose";
+import { TAGS } from "../constants/tags.js";
 
 export const getAllNotesSchema = {
   [Segments.QUERY]: Joi.object({
@@ -9,17 +8,6 @@ export const getAllNotesSchema = {
     perPage: Joi.number().integer().min(5).max(20).default(10),
     tag: Joi.string().valid(...TAGS),
     search: Joi.string().allow(""),
-  }),
-};
-
-export const noteIdSchema = {
-  [Segments.PARAMS]: Joi.object({
-    noteId: Joi.string().custom((value, helpers) => {
-      if (!mongoose.isValidObjectId(value)) {
-        return helpers.error("any.invalid");
-      }
-      return value;
-    }),
   }),
 };
 
@@ -56,6 +44,5 @@ export const updateNoteSchema = {
     title: Joi.string().min(1),
     content: Joi.string().allow(""),
     tag: Joi.string().valid(...TAGS),
-  }).min(1), // мінімум одне поле
+  }).min(1),
 };
-
