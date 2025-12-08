@@ -7,13 +7,28 @@ import {
   updateNote,
 } from "../controllers/notesController.js";
 
+import {
+  getAllNotesSchema,
+  noteIdSchema,
+  createNoteSchema,
+  updateNoteSchema,
+} from "../validations/notesValidation.js";
 
 const router = Router();
 
-router.get("/notes", getAllNotes);
-router.get("/notes/:noteId", getNoteById);
-router.post("/notes", createNote);
-router.patch("/notes/:noteId", updateNote);
-router.delete("/notes/:noteId", deleteNote);
+// GET /notes (пошук + пагінація)
+router.get("/notes", getAllNotesSchema, getAllNotes);
+
+// GET /notes/:noteId
+router.get("/notes/:noteId", noteIdSchema, getNoteById);
+
+// POST /notes
+router.post("/notes", createNoteSchema, createNote);
+
+// PATCH /notes/:noteId
+router.patch("/notes/:noteId", updateNoteSchema, updateNote);
+
+// DELETE /notes/:noteId
+router.delete("/notes/:noteId", noteIdSchema, deleteNote);
 
 export default router;

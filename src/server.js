@@ -9,6 +9,8 @@ import { errorHandler } from "./middleware/errorHandler.js";
 
 import notesRoutes from "./routes/notesRoutes.js";
 
+import { errors } from "celebrate";
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -22,6 +24,9 @@ app.use(cors());
 
 // routes
 app.use(notesRoutes);
+
+// celebrate validation errors
+app.use(errors());
 
 // 404
 app.use(notFoundHandler);
