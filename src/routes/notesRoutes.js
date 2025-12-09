@@ -7,27 +7,34 @@ import {
   updateNote,
 } from "../controllers/notesController.js";
 
+import { celebrate } from "celebrate";
+
 import {
   getAllNotesSchema,
-  noteIdSchema,
-  createNoteSchema,
+  noteIdSchema,createNoteSchema,
   updateNoteSchema,
 } from "../validations/notesValidation.js";
 
 const router = Router();
 
-router.get("/", getAllNotesSchema, getAllNotes);
+// GET /api/notes (пошук + пагінація)
+
+router.get("/", celebrate(getAllNotesSchema), getAllNotes);
 
 // GET /api/notes/:noteId
-router.get("/:noteId", noteIdSchema, getNoteById);
+
+router.get("/:noteId", celebrate(noteIdSchema), getNoteById);
 
 // POST /api/notes
-router.post("/", createNoteSchema, createNote);
+
+router.post("/", celebrate(createNoteSchema), createNote);
 
 // PATCH /api/notes/:noteId
-router.patch("/:noteId", updateNoteSchema, updateNote);
+
+router.patch("/:noteId", celebrate(updateNoteSchema), updateNote);
 
 // DELETE /api/notes/:noteId
-router.delete("/:noteId", noteIdSchema, deleteNote);
+
+router.delete("/:noteId", celebrate(noteIdSchema), deleteNote);
 
 export default router;
