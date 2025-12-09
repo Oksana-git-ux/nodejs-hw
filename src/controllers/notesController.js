@@ -1,29 +1,6 @@
 import { Note } from "../models/note.js";
 
-// 1. Контролер для створеня нотатки
-
-export const createNote = async (req, res, next) => {
-
-  const { title, content, tag } = req.body;
-
-  try {
-    const newNote = await Note.create({
-      title,
-      content,
-      tag,
-    });
-
-    res.status(201).json({
-      status: 201,
-      message: "Note successfully created",
-      data: newNote,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
- //2. Контролер для отримання всіх нотаток
+ //Контролер для отримання всіх нотаток
 
 export const getAllNotes = async (req, res) => {
   const {
@@ -62,6 +39,29 @@ export const getAllNotes = async (req, res) => {
     totalPages,
     notes,
   });
+};
+
+//Контролер для створеня нотатки
+
+export const createNote = async (req, res, next) => {
+
+  const { title, content, tag } = req.body;
+
+  try {
+    const newNote = await Note.create({
+      title,
+      content,
+      tag,
+    });
+
+    res.status(201).json({
+      status: 201,
+      message: "Note successfully created",
+      data: newNote,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 //Контролер для видалення нотатки (deleteNote)
@@ -113,6 +113,30 @@ export const updateNote = async (req, res, next) => {
       status: 200,
       message: "Note successfully updated",
       data: updatedNote,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Контроллер для отримання нотатки за Id (getNoteById)
+
+export const getNoteById = async (req, res, next) => {
+  const { noteId } = req.params;
+
+  try {
+    const note = await Note.findById(noteId);
+
+    if (!note) {
+
+      const error = new Error(`Note with id ${noteId} not found`);
+      error.status = 404;
+      return next(error);
+    }
+
+    res.status(200).json({
+      status: 200,
+      data: note,
     });
   } catch (error) {
     next(error);
