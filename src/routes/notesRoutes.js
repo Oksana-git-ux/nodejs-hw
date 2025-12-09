@@ -16,19 +16,18 @@ import {
 
 const router = Router();
 
-// GET /notes (пошук + пагінація)
-router.get("/notes", getAllNotesSchema, getAllNotes);
+router.get("/", getAllNotesSchema, getAllNotes);
 
-// GET /notes/:noteId
-router.get("/notes/:noteId", noteIdSchema, getNoteById);
+// GET /api/notes/:noteId
+router.get("/:noteId", noteIdSchema, getNoteById);
 
-// POST /notes
-router.post("/notes", createNoteSchema, createNote);
+// POST /api/notes
+router.post("/", createNoteSchema, createNote);
 
-// PATCH /notes/:noteId
-router.patch("/notes/:noteId", updateNoteSchema, updateNote);
+// PATCH /api/notes/:noteId
+router.patch("/:noteId", updateNoteSchema, updateNote);
 
-// DELETE /notes/:noteId
-router.delete("/notes/:noteId", noteIdSchema, deleteNote);
+// DELETE /api/notes/:noteId
+router.delete("/:noteId", noteIdSchema, deleteNote);
 
 export default router;
