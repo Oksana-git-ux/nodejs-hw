@@ -63,3 +63,58 @@ export const getAllNotes = async (req, res) => {
     notes,
   });
 };
+
+//Контролер для видалення нотатки (deleteNote)
+
+export const deleteNote = async (req, res, next) => {
+
+  const { noteId } = req.params;
+
+  try {
+    const deletedNote = await Note.findByIdAndDelete(noteId);
+
+    if (!deletedNote) {
+
+        const error = new Error(`Note with id ${noteId} not found`);
+        error.status = 404;
+        return next(error);
+    }
+
+    res.status(204).send();
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Контролер для оновлення нотатки (updateNote)
+export const updateNote = async (req, res, next) => {
+
+  const { noteId } = req.params;
+
+  const updates = req.body;
+
+  try {
+
+    const updatedNote = await Note.findByIdAndUpdate(
+      noteId,
+      updates,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedNote) {
+
+      const error = new Error(`Note with id ${noteId} not found`);
+      error.status = 404;
+      return next(error);
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: "Note successfully updated",
+      data: updatedNote,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
