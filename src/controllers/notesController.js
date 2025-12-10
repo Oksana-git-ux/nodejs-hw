@@ -1,50 +1,46 @@
 import { Note } from "../models/note.js";
+import createError from "http-errors";
 
- //Контролер для отримання всіх нотаток
+// Контролер для отримання всіх нотаток
+export const getAllNotes = async (req, res, next) => {
+  try {
+    const { page = 1, perPage = 10, tag, search } = req.query;
 
-export const getAllNotes = async (req, res) => {
-  const {
-    page = 1,
-    perPage = 10,
-    tag,
-    search,
-  } = req.query;
+    const filter = {};
 
-  const filter = {};
+    if (tag) {
+      filter.tag = tag;
+    }
 
-  if (tag) {
-    filter.tag = tag;
+    if (search) {
+      filter.$text = { $search: search };
+    }
+
+    const skip = (page - 1) * perPage;
+
+    const totalNotes = await Note.countDocuments(filter);
+
+    const notes = await Note.find(filter)
+      .skip(skip)
+      .limit(Number(perPage));
+
+    const totalPages = Math.ceil(totalNotes / perPage);
+
+    res.status(200).json({
+      status: 200,
+      page: Number(page),
+      perPage: Number(perPage),
+      totalNotes,
+      totalPages,
+      notes,
+    });
+  } catch (error) {
+    next(error);
   }
-
-  if (search) {
-
-    filter.$text = { $search: search };
-  }
-
-  const skip = (page - 1) * perPage;
-
-  const totalNotes = await Note.countDocuments(filter);
-
-  const notes = await Note.find(filter)
-    .skip(skip)
-    .limit(Number(perPage));
-
-  const totalPages = Math.ceil(totalNotes / perPage);
-
-  res.status(200).json({
-    status: 200,
-    page: Number(page),
-    perPage: Number(perPage),
-    totalNotes,
-    totalPages,
-    notes,
-  });
 };
 
-//Контролер для створеня нотатки
-
+// Контролер для створення нотатки
 export const createNote = async (req, res, next) => {
-
   const { title, content, tag } = req.body;
 
   try {
@@ -64,24 +60,23 @@ export const createNote = async (req, res, next) => {
   }
 };
 
-//Контролер для видалення нотатки (deleteNote)
-
+// Контролер для видалення нотатки (deleteNote)
 export const deleteNote = async (req, res, next) => {
-
   const { noteId } = req.params;
 
   try {
     const deletedNote = await Note.findByIdAndDelete(noteId);
 
     if (!deletedNote) {
-
-        const error = new Error(`Note with id ${noteId} not found`);
-        error.status = 404;
-        return next(error);
+      return next(createError(404, `Note with id ${noteId} not found`));
     }
 
-    res.status(204).send();
-
+    // Вимога: повернути 200 і видалену нотатку
+    res.status(200).json({
+      status: 200,
+      message: "Note successfully deleted",
+      data: deletedNote,
+    });
   } catch (error) {
     next(error);
   }
@@ -89,13 +84,10 @@ export const deleteNote = async (req, res, next) => {
 
 // Контролер для оновлення нотатки (updateNote)
 export const updateNote = async (req, res, next) => {
-
   const { noteId } = req.params;
-
   const updates = req.body;
 
   try {
-
     const updatedNote = await Note.findByIdAndUpdate(
       noteId,
       updates,
@@ -103,10 +95,7 @@ export const updateNote = async (req, res, next) => {
     );
 
     if (!updatedNote) {
-
-      const error = new Error(`Note with id ${noteId} not found`);
-      error.status = 404;
-      return next(error);
+      return next(createError(404, `Note with id ${noteId} not found`));
     }
 
     res.status(200).json({
@@ -119,8 +108,7 @@ export const updateNote = async (req, res, next) => {
   }
 };
 
-// Контроллер для отримання нотатки за Id (getNoteById)
-
+// Контролер для отримання нотатки за Id
 export const getNoteById = async (req, res, next) => {
   const { noteId } = req.params;
 
@@ -128,10 +116,7 @@ export const getNoteById = async (req, res, next) => {
     const note = await Note.findById(noteId);
 
     if (!note) {
-
-      const error = new Error(`Note with id ${noteId} not found`);
-      error.status = 404;
-      return next(error);
+      return next(createError(404, `Note with id ${noteId} not found`));
     }
 
     res.status(200).json({

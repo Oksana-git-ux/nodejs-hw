@@ -2,45 +2,40 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 
-//Локальні імпорти
+// Локальні імпорти
 import { connectMongoDB } from "./db/connectMongoDB.js";
 import { logger } from "./middleware/logger.js";
 import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import notesRoutes from "./routes/notesRoutes.js";
 
-//Імпорт сторонніх бібліотек
+// Імпорт Celebrate
 import { errors } from "celebrate";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 1. Підключення до БД (Перед запуском сервера)
+// 1. Підключення до БД
 await connectMongoDB();
 
-// 2. Глобальний middleware (Перед маршрутами)
-//Логування має бути першим
+// 2. Глобальні middleware
 app.use(logger);
-
-//Cors та обробка тіла запиту
 app.use(cors());
-app.use(express.json()); //Перед маршрутами, що використовують req.body
+app.use(express.json());
 
-// 3. Маршрути (routes)
-// Застосування маршрутів з префіксом /api/notes
-app.use('/api/notes', notesRoutes);
+// 3. Реєстрація маршрутів (Без префікса!)
+app.use(notesRoutes);
 
-// 4. Обробники помилок
-// Celebrate - після маршрутів
+// 4. Celebrate помилки
 app.use(errors());
 
-// 5. Обробник 404 (Якщо жоден маршрут не спрацював, має приймати лише 1-3 аргументи, щоб спрацював)
+// 5. 404
 app.use(notFoundHandler);
 
-// 6. Фінальгтй обробник 500 (Обробка всіх помилок, переданих через next(err) має приймати 4 аргументи (err, req, res, next)
+// 6. Загальний error handler
 app.use(errorHandler);
 
-// 7. Запуск сервера
+// 7. Старт сервера
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
