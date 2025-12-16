@@ -13,7 +13,7 @@ export const getAllNotesSchema = {
 
 export const noteIdSchema = {
   [Segments.PARAMS]: Joi.object({
-    noteId: Joi.string().custom((value, helpers) => {
+    noteId: Joi.string().required().custom((value, helpers) => {
       if (!mongoose.isValidObjectId(value)) {
         return helpers.error("any.invalid");
       }

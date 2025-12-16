@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { celebrate } from "celebrate";
+
 import {
   getAllNotes,
   getNoteById,
@@ -7,34 +9,31 @@ import {
   updateNote,
 } from "../controllers/notesController.js";
 
-import { celebrate } from "celebrate";
-
 import {
   getAllNotesSchema,
   noteIdSchema,createNoteSchema,
   updateNoteSchema,
 } from "../validations/notesValidation.js";
 
+import { authenticate } from "../middleware/authenticate.js";
+
 const router = Router();
 
-// GET /api/notes (пошук + пагінація)
+router.use( authenticate);
 
-router.get("/", celebrate(getAllNotesSchema), getAllNotes);
+// GET /notes
+router.get("/notes", celebrate(getAllNotesSchema), getAllNotes);
 
-// GET /api/notes/:noteId
+// GET /notes/:noteId
+router.get("/notes/:noteId", celebrate(noteIdSchema), getNoteById);
 
-router.get("/:noteId", celebrate(noteIdSchema), getNoteById);
+// POST /notes
+router.post("/notes", celebrate(createNoteSchema), createNote);
 
-// POST /api/notes
+// PATCH /notes/:noteId
+router.patch("/notes/:noteId", celebrate(updateNoteSchema), updateNote);
 
-router.post("/", celebrate(createNoteSchema), createNote);
-
-// PATCH /api/notes/:noteId
-
-router.patch("/:noteId", celebrate(updateNoteSchema), updateNote);
-
-// DELETE /api/notes/:noteId
-
-router.delete("/:noteId", celebrate(noteIdSchema), deleteNote);
+// DELETE /notes/:noteId
+router.delete("/notes/:noteId", celebrate(noteIdSchema), deleteNote);
 
 export default router;

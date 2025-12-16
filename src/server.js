@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
+import cookieParser from "cookie-parser";
 
 // Локальні імпорти
 import { connectMongoDB } from "./db/connectMongoDB.js";
@@ -8,9 +9,8 @@ import { logger } from "./middleware/logger.js";
 import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import notesRoutes from "./routes/notesRoutes.js";
-
-// Імпорт Celebrate
 import { errors } from "celebrate";
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,9 +22,11 @@ await connectMongoDB();
 app.use(logger);
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 // 3. Реєстрація маршрутів (Без префікса!)
 app.use(notesRoutes);
+app.use(authRoutes);
 
 // 4. Celebrate помилки
 app.use(errors());

@@ -6,7 +6,7 @@ export const getAllNotes = async (req, res, next) => {
   try {
     const { page = 1, perPage = 10, tag, search } = req.query;
 
-    const filter = {};
+    const filter = {userId: req.user._id,};
 
     if (tag) {
       filter.tag = tag;
@@ -48,6 +48,7 @@ export const createNote = async (req, res, next) => {
       title,
       content,
       tag,
+      userId: req.user._id,
     });
 
     res.status(201).json({
@@ -62,19 +63,21 @@ export const createNote = async (req, res, next) => {
 
 // Контролер для видалення нотатки (deleteNote)
 export const deleteNote = async (req, res, next) => {
-  const { noteId } = req.params;
-
   try {
-    const deletedNote = await Note.findByIdAndDelete(noteId);
+    const { noteId } = req.params;
+
+    const deletedNote = await Note.findOneAndDelete({
+      _id: noteId,
+      userId: req.user._id,
+    });
 
     if (!deletedNote) {
-      return next(createError(404, `Note with id ${noteId} not found`));
+      return next(createError(404, 'Note not found'));
     }
 
-    // Вимога: повернути 200 і видалену нотатку
     res.status(200).json({
       status: 200,
-      message: "Note successfully deleted",
+      message: 'Note successfully deleted',
       data: deletedNote,
     });
   } catch (error) {
@@ -84,23 +87,22 @@ export const deleteNote = async (req, res, next) => {
 
 // Контролер для оновлення нотатки (updateNote)
 export const updateNote = async (req, res, next) => {
-  const { noteId } = req.params;
-  const updates = req.body;
-
   try {
-    const updatedNote = await Note.findByIdAndUpdate(
-      noteId,
-      updates,
+    const { noteId } = req.params;
+
+    const updatedNote = await Note.findOneAndUpdate(
+      { _id: noteId, userId: req.user._id },
+      req.body,
       { new: true, runValidators: true }
     );
 
     if (!updatedNote) {
-      return next(createError(404, `Note with id ${noteId} not found`));
+      return next(createError(404, 'Note not found'));
     }
 
     res.status(200).json({
       status: 200,
-      message: "Note successfully updated",
+      message: 'Note successfully updated',
       data: updatedNote,
     });
   } catch (error) {
@@ -113,7 +115,7 @@ export const getNoteById = async (req, res, next) => {
   const { noteId } = req.params;
 
   try {
-    const note = await Note.findById(noteId);
+    const note = await Note.findOne({ _id: noteId, userId: req.user._id, });
 
     if (!note) {
       return next(createError(404, `Note with id ${noteId} not found`));

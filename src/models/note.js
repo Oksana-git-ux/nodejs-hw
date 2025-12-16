@@ -18,8 +18,12 @@ const noteSchema = new Schema(
       enum: TAGS,   // імпортована константа
       default: "Todo",
     },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true, }
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false, }
 );
 
 // текстовий індекс перед створенням моделі
