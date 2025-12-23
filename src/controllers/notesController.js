@@ -1,7 +1,6 @@
 import { Note } from "../models/note.js";
 import createError from "http-errors";
 
-// Контролер для отримання всіх нотаток
 export const getAllNotes = async (req, res, next) => {
   try {
     const { page = 1, perPage = 10, tag, search } = req.query;
@@ -39,7 +38,6 @@ export const getAllNotes = async (req, res, next) => {
   }
 };
 
-// Контролер для створення нотатки
 export const createNote = async (req, res, next) => {
   const { title, content, tag } = req.body;
 
@@ -61,7 +59,6 @@ export const createNote = async (req, res, next) => {
   }
 };
 
-// Контролер для видалення нотатки (deleteNote)
 export const deleteNote = async (req, res, next) => {
   try {
     const { noteId } = req.params;
@@ -85,7 +82,6 @@ export const deleteNote = async (req, res, next) => {
   }
 };
 
-// Контролер для оновлення нотатки (updateNote)
 export const updateNote = async (req, res, next) => {
   try {
     const { noteId } = req.params;
@@ -110,7 +106,6 @@ export const updateNote = async (req, res, next) => {
   }
 };
 
-// Контролер для отримання нотатки за Id
 export const getNoteById = async (req, res, next) => {
   const { noteId } = req.params;
 

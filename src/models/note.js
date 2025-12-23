@@ -15,7 +15,7 @@ const noteSchema = new Schema(
     },
     tag: {
       type: String,
-      enum: TAGS,   // імпортована константа
+      enum: TAGS,
       default: "Todo",
     },
     userId: {
@@ -26,7 +26,6 @@ const noteSchema = new Schema(
   { timestamps: true, versionKey: false, }
 );
 
-// текстовий індекс перед створенням моделі
 noteSchema.index({ title: "text", content: "text" });
 
 export const Note = model("Note", noteSchema);
