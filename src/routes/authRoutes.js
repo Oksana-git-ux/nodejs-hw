@@ -26,14 +26,7 @@ router.post(
   resetPassword
 );
 
-
 router.post('/auth/logout', logoutUser);
 router.post('/auth/refresh', refreshUserSession);
-
-router.post(
-  '/auth/reset-password',
-  celebrate(resetPasswordSchema),
-  resetPassword
-);
 
 export default router;
